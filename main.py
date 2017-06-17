@@ -9,23 +9,29 @@ class struc_Tile:
 
 
 class obj_Actor:
-    def __init__(self, x, y, name_object, sprite, creature = None):
+    def __init__(self, x, y, name_object, sprite, creature = None, ai = None):
         self.x = x
         self.y = y
         self.sprite = sprite
 
+        self.creature = creature
         if creature:
-            self.creature = creature
+
+            creature.owner = self
+
+        self.ai = ai
+        if ai:
+            ai.owner = self
 
     def draw(self):
         SURFACE_MAIN.blit(self.sprite, (self.x*constants.TILE_WIDTH, self.y*constants.TILE_HEIGHT))
 
     def move(self, dx, dy):
-        if self.y + dy >= len(GAME_MAP):
+        if self.y + dy >= len(GAME_MAP) or self.y + dy < 0:
             print("Tried to move out of map")
             return
 
-        if self.x+dx >= len(GAME_MAP[0]):
+        if self.x+dx >= len(GAME_MAP[0]) or self.x + dx < 0:
             print("Tried to move out of map")
             return
 
@@ -56,6 +62,10 @@ class com_Creature:
         self.name_instance = name_instance
         self.hp = hp
 
+class AI_test:
+    def take_turn(self):
+        self.owner.move(-1,0)
+
 # MAP
 def map_create():
     new_map = [[ struc_Tile(False) for y in range(0, constants.MAP_HEIGHT)] for x in range(0, constants.MAP_WIDTH)]
@@ -72,8 +82,8 @@ def draw_game():
     # draw map
     draw_map(GAME_MAP)
     # draw characters
-    ENEMY.draw()
-    PLAYER.draw()
+    for ent in ENTITIES:
+        ent.draw()
 
     # update the display
     pygame.display.flip()
@@ -91,25 +101,19 @@ def draw_map(map):
 
 def game_main_loop():
     game_quit = False
+    player_action = "no-action"
 
     while not game_quit:
-        # get input
-        events_list = pygame.event.get()
 
-        # process input
-        for event in events_list:
-            if event.type == pygame.QUIT:
-                game_quit = True
+        player_action = game_handle_keys()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    PLAYER.move(0,-1)
-                if event.key == pygame.K_DOWN:
-                    PLAYER.move(0,1)
-                if event.key == pygame.K_LEFT:
-                    PLAYER.move(-1,0)
-                if event.key == pygame.K_RIGHT:
-                    PLAYER.move(1,0)
+        if player_action == "QUIT":
+            game_quit = True
+
+        elif player_action != "no-action":
+            for ent in ENTITIES:
+                if ent.ai:
+                    ent.ai.take_turn()
 
         # draw
         draw_game()
@@ -118,8 +122,32 @@ def game_main_loop():
     pygame.quit()
     exit()
 
+def game_handle_keys():
+    # get input
+    events_list = pygame.event.get()
 
-# Execute game
+    # process input
+    for event in events_list:
+        if event.type == pygame.QUIT:
+            return "QUIT"
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                PLAYER.move(0, -1)
+                return "player-moved"
+            if event.key == pygame.K_DOWN:
+                PLAYER.move(0, 1)
+                return "player-moved"
+            if event.key == pygame.K_LEFT:
+                PLAYER.move(-1, 0)
+                return "player-moved"
+            if event.key == pygame.K_RIGHT:
+                PLAYER.move(1, 0)
+                return "player-moved"
+
+    return "no-action"
+
+# Init game (watch out for globals)
 def game_initialize():
     global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY, ENTITIES
 
@@ -133,10 +161,12 @@ def game_initialize():
     PLAYER = obj_Actor(0, 0, "Player", constants.S_PLAYER, creature=creature_com1)
 
     creature_com2 = com_Creature("kobold")
-    ENEMY = obj_Actor(9, 9, "kobold", constants.S_KOBOLD, creature=creature_com2)
+    ai_com = AI_test()
+    ENEMY = obj_Actor(9, 9, "kobold", constants.S_KOBOLD, creature=creature_com2, ai=ai_com)
 
     ENTITIES = [PLAYER, ENEMY]
 
+# Execute game
 if __name__ == "__main__":
     game_initialize()
     game_main_loop()
