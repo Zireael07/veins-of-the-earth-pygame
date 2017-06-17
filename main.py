@@ -44,12 +44,15 @@ class obj_Actor:
         for ent in ENTITIES:
             if (ent is not self
                 and ent.x == self.x + dx
-                and ent.y == self.y + dy):
-                print("Tried to move into occupied tile")
+                and ent.y == self.y + dy
+                and ent.creature):
+                # print("Tried to move into occupied tile")
                 target = ent
                 break
-                # return
 
+        if target:
+            print(self.creature.name_instance + " attacks " + target.creature.name_instance + " for 5 damage!")
+            target.creature.take_damage(5)
 
         tile_is_wall = (GAME_MAP[self.x+dx][self.y+dy].block_path == True)
 
@@ -58,13 +61,30 @@ class obj_Actor:
             self.y = self.y+dy
 
 class com_Creature:
-    def __init__(self, name_instance, hp = 10):
+    def __init__(self, name_instance, hp = 10, death_function = None):
         self.name_instance = name_instance
+        self.max_hp = hp
         self.hp = hp
+        self.death_function = death_function
+
+    def take_damage(self, damage):
+        self.hp -= damage
+        print self.name_instance + " 's hp is " + str(self.hp) + "/" + str(self.max_hp)
+
+        if self.hp < 0:
+            if self.death_function is not None:
+                self.death_function(self.owner)
 
 class AI_test:
     def take_turn(self):
         self.owner.move(libtcod.random_get_int(0, -1, 1), libtcod.random_get_int(0, -1, 1))
+
+def death_monster(monster):
+    print monster.creature.name_instance + " is dead!"
+    monster.creature = None
+    monster.ai = None
+    # remove from map
+    ENTITIES.remove(monster)
 
 # MAP
 def map_create():
@@ -171,7 +191,7 @@ def game_initialize():
     creature_com1 = com_Creature("Player")
     PLAYER = obj_Actor(1, 1, "Player", constants.S_PLAYER, creature=creature_com1)
 
-    creature_com2 = com_Creature("kobold")
+    creature_com2 = com_Creature("kobold", death_function=death_monster)
     ai_com = AI_test()
     ENEMY = obj_Actor(9, 9, "kobold", constants.S_KOBOLD, creature=creature_com2, ai=ai_com)
 
