@@ -21,5 +21,6 @@ COLOR_DEFAULT_BG = COLOR_GREY
 #Sprites
 
 S_PLAYER = pygame.image.load("gfx/human_m.png")
+S_KOBOLD = pygame.image.load("gfx/kobold.png")
 S_WALL = pygame.image.load("gfx/wall_stone.png")
 S_FLOOR = pygame.image.load("gfx/floor_sand.png")

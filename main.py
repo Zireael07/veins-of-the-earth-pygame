@@ -9,16 +9,19 @@ class struc_Tile:
 
 
 class obj_Actor:
-    def __init__(self, x, y, sprite):
+    def __init__(self, x, y, name_object, sprite, creature = None):
         self.x = x
         self.y = y
         self.sprite = sprite
+
+        if creature:
+            self.creature = creature
 
     def draw(self):
         SURFACE_MAIN.blit(self.sprite, (self.x*constants.TILE_WIDTH, self.y*constants.TILE_HEIGHT))
 
     def move(self, dx, dy):
-        if self.y + dy >= len(GAME_MAP): # not GAME_MAP[self.x+dx]:
+        if self.y + dy >= len(GAME_MAP):
             print("Tried to move out of map")
             return
 
@@ -30,11 +33,30 @@ class obj_Actor:
             print("Tried to move out of map")
             return
 
-        if GAME_MAP[self.x+dx][self.y+dy].block_path == False:
+
+        target = None
+        for ent in ENTITIES:
+            if (ent is not self
+                and ent.x == self.x + dx
+                and ent.y == self.y + dy):
+                print("Tried to move into occupied tile")
+                target = ent
+                break
+                # return
+
+
+        tile_is_wall = (GAME_MAP[self.x+dx][self.y+dy].block_path == True)
+
+        if not tile_is_wall and target is None:
             self.x = self.x+dx
             self.y = self.y+dy
 
+class com_Creature:
+    def __init__(self, name_instance, hp = 10):
+        self.name_instance = name_instance
+        self.hp = hp
 
+# MAP
 def map_create():
     new_map = [[ struc_Tile(False) for y in range(0, constants.MAP_HEIGHT)] for x in range(0, constants.MAP_WIDTH)]
 
@@ -49,7 +71,8 @@ def draw_game():
     SURFACE_MAIN.fill(constants.COLOR_DEFAULT_BG)
     # draw map
     draw_map(GAME_MAP)
-    # draw character
+    # draw characters
+    ENEMY.draw()
     PLAYER.draw()
 
     # update the display
@@ -98,7 +121,7 @@ def game_main_loop():
 
 # Execute game
 def game_initialize():
-    global SURFACE_MAIN, GAME_MAP, PLAYER
+    global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY, ENTITIES
 
     pygame.init()
 
@@ -106,7 +129,13 @@ def game_initialize():
 
     GAME_MAP = map_create()
 
-    PLAYER = obj_Actor(0, 0, constants.S_PLAYER)
+    creature_com1 = com_Creature("Player")
+    PLAYER = obj_Actor(0, 0, "Player", constants.S_PLAYER, creature=creature_com1)
+
+    creature_com2 = com_Creature("kobold")
+    ENEMY = obj_Actor(9, 9, "kobold", constants.S_KOBOLD, creature=creature_com2)
+
+    ENTITIES = [PLAYER, ENEMY]
 
 if __name__ == "__main__":
     game_initialize()
