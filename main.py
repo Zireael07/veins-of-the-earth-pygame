@@ -200,7 +200,7 @@ def draw_map(map):
                     SURFACE_MAIN.blit(shadow, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
 
 def draw_debug():
-    draw_text(SURFACE_MAIN, "Test", (0,0), constants.COLOR_RED)
+    draw_text(SURFACE_MAIN, "fps: " + str(int(CLOCK.get_fps())), (0,0), constants.COLOR_RED)
 
 def draw_text(display_surface, text, T_coords, text_color):
     text_surf, text_rect = helper_text_objects(text, text_color)
@@ -234,6 +234,8 @@ def game_main_loop():
 
         # draw
         draw_game()
+
+        CLOCK.tick(constants.GAME_FPS)
 
     # quit the game
     pygame.quit()
@@ -272,9 +274,11 @@ def game_handle_keys():
 
 # Init game (watch out for globals)
 def game_initialize():
-    global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY, ENTITIES, FOV_CALCULATE
+    global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY, ENTITIES, FOV_CALCULATE, CLOCK
 
     pygame.init()
+
+    CLOCK = pygame.time.Clock()
 
     SURFACE_MAIN = pygame.display.set_mode( [constants.MAP_WIDTH*constants.TILE_WIDTH,
                                              constants.MAP_HEIGHT*constants.TILE_HEIGHT] )
