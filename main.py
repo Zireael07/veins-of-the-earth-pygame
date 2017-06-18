@@ -67,13 +67,14 @@ class com_Creature:
             self.owner.y += dy
 
     def attack(self, target, damage):
-        print(self.name_instance + " attacks " + target.creature.name_instance + " for " + str(damage) + " damage!")
+        game_message(self.name_instance + " attacks " + target.creature.name_instance + " "
+                     "for " + str(damage) + " damage!", constants.COLOR_WHITE)
         target.creature.take_damage(damage)
 
 
     def take_damage(self, damage):
         self.hp -= damage
-        print self.name_instance + " 's hp is " + str(self.hp) + "/" + str(self.max_hp)
+        game_message(self.name_instance + " 's hp is " + str(self.hp) + "/" + str(self.max_hp), constants.COLOR_RED)
 
         if self.hp < 0:
             if self.death_function is not None:
@@ -84,7 +85,7 @@ class AI_test:
         self.owner.creature.move(libtcod.random_get_int(0, -1, 1), libtcod.random_get_int(0, -1, 1))
 
 def death_monster(monster):
-    print monster.creature.name_instance + " is dead!"
+    game_message(monster.creature.name_instance + " is dead!", constants.COLOR_GREY)
     monster.creature = None
     monster.ai = None
     # remove from map
@@ -163,6 +164,7 @@ def draw_game():
         ent.draw()
 
     draw_debug()
+    draw_messages()
 
     # update the display
     pygame.display.flip()
@@ -199,20 +201,45 @@ def draw_map(map):
                     shadow.fill(constants.COLOR_GREY)
                     SURFACE_MAIN.blit(shadow, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
 
-def draw_debug():
-    draw_text(SURFACE_MAIN, "fps: " + str(int(CLOCK.get_fps())), (0,0), constants.COLOR_RED)
+def draw_messages():
+    if len(GAME_MESSAGES) <= constants.NUM_MESSAGES:
+        to_draw = GAME_MESSAGES
+    else:
+        to_draw = GAME_MESSAGES[-constants.NUM_MESSAGES:]
 
-def draw_text(display_surface, text, T_coords, text_color):
-    text_surf, text_rect = helper_text_objects(text, text_color)
+    text_height = helper_text_height(constants.FONT_SHERWOOD)
+
+    start_y = constants.MAP_HEIGHT*constants.TILE_HEIGHT - (constants.NUM_MESSAGES * text_height)
+
+    i = 0
+    for message, color in to_draw:
+        draw_text(SURFACE_MAIN, message, (0, start_y + (i*text_height)), color, constants.COLOR_BLACK)
+
+        i += 1
+
+def draw_debug():
+    draw_text(SURFACE_MAIN, "fps: " + str(int(CLOCK.get_fps())), (0,0), constants.COLOR_RED, constants.COLOR_BLACK)
+
+def draw_text(display_surface, text, T_coords, text_color, back_color=None):
+    text_surf, text_rect = helper_text_objects(text, text_color, back_color)
 
     text_rect.topleft = T_coords
 
     display_surface.blit(text_surf, text_rect)
 
-def helper_text_objects(inc_text, inc_color):
-    Text_surface = constants.FONT_SHERWOOD.render(inc_text, False, inc_color)
+def helper_text_objects(inc_text, inc_color, inc_bg_color):
+    if inc_bg_color:
+        Text_surface = constants.FONT_SHERWOOD.render(inc_text, False, inc_color, inc_bg_color)
+    else:
+        Text_surface = constants.FONT_SHERWOOD.render(inc_text, False, inc_color)
 
     return Text_surface, Text_surface.get_rect()
+
+def helper_text_height(font):
+    font_object = font.render('a', False, (0,0,0))
+    font_rect = font_object.get_rect()
+
+    return font_rect.height
 
 def game_main_loop():
     game_quit = False
@@ -272,9 +299,12 @@ def game_handle_keys():
 
     return "no-action"
 
+def game_message(game_msg, msg_color):
+    GAME_MESSAGES.append((game_msg, msg_color))
+
 # Init game (watch out for globals)
 def game_initialize():
-    global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY, ENTITIES, FOV_CALCULATE, CLOCK
+    global SURFACE_MAIN, GAME_MAP, PLAYER, ENEMY, ENTITIES, FOV_CALCULATE, CLOCK, GAME_MESSAGES
 
     pygame.init()
 
@@ -284,6 +314,12 @@ def game_initialize():
                                              constants.MAP_HEIGHT*constants.TILE_HEIGHT] )
 
     GAME_MAP = map_create()
+
+    GAME_MESSAGES = []
+    # game_message("test message", constants.COLOR_WHITE)
+    # game_message("test message2", constants.COLOR_RED)
+    # game_message("test message3", constants.COLOR_WHITE)
+    # game_message("test message4", constants.COLOR_RED)
 
     FOV_CALCULATE = True
 

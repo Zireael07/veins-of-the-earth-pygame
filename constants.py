@@ -39,3 +39,5 @@ LIGHT_RADIUS = 4
 
 FONT_SHERWOOD_LARGE = pygame.font.Font("fonts/sherwood.ttf", 16)
 FONT_SHERWOOD = pygame.font.Font("fonts/sherwood.ttf", 12)
+
+NUM_MESSAGES = 4
