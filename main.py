@@ -162,6 +162,8 @@ def draw_game():
     for ent in ENTITIES:
         ent.draw()
 
+    draw_debug()
+
     # update the display
     pygame.display.flip()
 
@@ -196,6 +198,21 @@ def draw_map(map):
                     shadow.set_alpha(200)
                     shadow.fill(constants.COLOR_GREY)
                     SURFACE_MAIN.blit(shadow, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
+
+def draw_debug():
+    draw_text(SURFACE_MAIN, "Test", (0,0), constants.COLOR_RED)
+
+def draw_text(display_surface, text, T_coords, text_color):
+    text_surf, text_rect = helper_text_objects(text, text_color)
+
+    text_rect.topleft = T_coords
+
+    display_surface.blit(text_surf, text_rect)
+
+def helper_text_objects(inc_text, inc_color):
+    Text_surface = constants.FONT_SHERWOOD.render(inc_text, False, inc_color)
+
+    return Text_surface, Text_surface.get_rect()
 
 def game_main_loop():
     game_quit = False
