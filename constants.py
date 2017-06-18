@@ -1,4 +1,5 @@
 import pygame
+import libtcodpy as libtcod
 
 #Game sizes
 GAME_WIDTH = 800
@@ -24,3 +25,8 @@ S_PLAYER = pygame.image.load("gfx/human_m.png")
 S_KOBOLD = pygame.image.load("gfx/kobold.png")
 S_WALL = pygame.image.load("gfx/wall_stone.png")
 S_FLOOR = pygame.image.load("gfx/floor_sand.png")
+
+#FOV
+FOV_ALGO = libtcod.FOV_BASIC
+FOV_LIGHT_WALLS = True
+LIGHT_RADIUS = 4
