@@ -31,6 +31,8 @@ S_PLAYER = pygame.image.load("gfx/human_m.png")
 S_KOBOLD = pygame.image.load("gfx/kobold.png")
 S_WALL = pygame.image.load("gfx/wall_stone.png")
 S_FLOOR = pygame.image.load("gfx/floor_sand.png")
+S_FLOOR_UNSEEN = pygame.image.load("gfx/floor_sand_explored.png")
+S_WALL_UNSEEN = pygame.image.load("gfx/wall_stone_explored.png")
 
 #FOV
 FOV_ALGO = libtcod.FOV_BASIC

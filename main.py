@@ -190,16 +190,16 @@ def draw_map(map):
             elif map[x][y].explored:
                     if map[x][y].block_path == True:
                         # draw wall
-                        SURFACE_MAIN.blit(constants.S_WALL, (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
+                        SURFACE_MAIN.blit(constants.S_WALL_UNSEEN, (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
                     else:
                         # draw floor
-                        SURFACE_MAIN.blit(constants.S_FLOOR, (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
+                        SURFACE_MAIN.blit(constants.S_FLOOR_UNSEEN, (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
 
                     # the shadow trick comes from Katie Cunningham's https://github.com/kcunning/Katie-s-Rougish-PyGame
-                    shadow = pygame.Surface((54, 54)) # pygame.Surface((constants.TILE_WIDTH, constants.TILE_HEIGHT))
-                    shadow.set_alpha(200)
-                    shadow.fill(constants.COLOR_GREY)
-                    SURFACE_MAIN.blit(shadow, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
+                    # shadow = pygame.Surface((54, 54)) # pygame.Surface((constants.TILE_WIDTH, constants.TILE_HEIGHT))
+                    # shadow.set_alpha(200)
+                    # shadow.fill(constants.COLOR_GREY)
+                    # SURFACE_MAIN.blit(shadow, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
 
 def draw_messages():
     if len(GAME_MESSAGES) <= constants.NUM_MESSAGES:
