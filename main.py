@@ -28,7 +28,7 @@ class obj_Actor:
         is_visible = libtcod.map_is_in_fov(FOV_MAP, self.x, self.y)
 
         if is_visible:
-            SURFACE_MAIN.blit(self.sprite, (self.x*constants.TILE_WIDTH, self.y*constants.TILE_HEIGHT))
+            SURFACE_MAIN.blit(self.sprite.convert_alpha(), (self.x*constants.TILE_WIDTH, self.y*constants.TILE_HEIGHT))
 
 
 
@@ -182,18 +182,18 @@ def draw_map(map):
 
                 if map[x][y].block_path == True:
                     # draw wall
-                    SURFACE_MAIN.blit(constants.S_WALL, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
+                    SURFACE_MAIN.blit(constants.S_WALL.convert_alpha(), (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
                 else:
                     # draw floor
-                    SURFACE_MAIN.blit(constants.S_FLOOR, (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
+                    SURFACE_MAIN.blit(constants.S_FLOOR.convert_alpha(), (x*constants.TILE_WIDTH, y*constants.TILE_HEIGHT))
 
             elif map[x][y].explored:
                     if map[x][y].block_path == True:
                         # draw wall
-                        SURFACE_MAIN.blit(constants.S_WALL_UNSEEN, (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
+                        SURFACE_MAIN.blit(constants.S_WALL_UNSEEN.convert_alpha(), (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
                     else:
                         # draw floor
-                        SURFACE_MAIN.blit(constants.S_FLOOR_UNSEEN, (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
+                        SURFACE_MAIN.blit(constants.S_FLOOR_UNSEEN.convert_alpha(), (x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT))
 
                     # the shadow trick comes from Katie Cunningham's https://github.com/kcunning/Katie-s-Rougish-PyGame
                     # shadow = pygame.Surface((54, 54)) # pygame.Surface((constants.TILE_WIDTH, constants.TILE_HEIGHT))
